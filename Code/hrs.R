@@ -11,19 +11,18 @@
   
   # Functions
   source("Functions/functions_simulation.R")
-  source("Functions/functions_data.R")
 
 
 ### Load transition matrices ###################################################
 
   # Women
-  women <- read.csv(file="Data/Pmat_f_2009.csv",row.names=1)
+  women <- read.csv(file="Input/Pmat_f_2009.csv",row.names=1)
   women <- as.matrix(women)
   states <- rownames(women)
   colnames(women) <- states
   
   # Men
-  men <- read.csv(file="Data/Pmat_m_2009.csv",row.names=1)
+  men <- read.csv(file="Input/Pmat_m_2009.csv",row.names=1)
   men <- as.matrix(men)
   colnames(men) <- states
   
@@ -129,8 +128,8 @@
   
   # Save
   write.csv(simdata,
-            file="Data/hrs.csv",row.names=F)  
+            file="Output/hrs.csv",row.names=F)  
   
   # Save (2)
-  save(simdata,file="Data/hrs.rda")
+  save(simdata,file="Output/hrs.rda")
   

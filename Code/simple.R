@@ -118,8 +118,8 @@
 
   # Save (1)
   write.csv(simdata,
-            file="Data/simple_example.csv",row.names=F)
+            file="Output/simple.csv",row.names=F)
   
   # Save (2)
-  save(simdata,file="Data/simple.rda")
+  save(simdata,file="Output/simple.rda")
   
