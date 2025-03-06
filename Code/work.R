@@ -1,4 +1,4 @@
-### Generate example data based on HRS #########################################
+### Generate work-trajectory example ###########################################
 
 ### Packages, functions, settings ##############################################
 
@@ -128,8 +128,8 @@
   
   # Save
   write.csv(simdata,
-            file="Output/hrs.csv",row.names=F)  
+            file="Output/work.csv",row.names=F)  
   
   # Save (2)
-  save(simdata,file="Output/hrs.rda")
+  save(simdata,file="Output/work.rda")
   
