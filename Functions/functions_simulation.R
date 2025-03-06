@@ -32,67 +32,7 @@
     res <- as.data.frame(res)
     return(res)
   }
-  
-  
-### Generate trans probs in data frame, basic ##################################
-  
-  basic_sim <- function(transient,  # Character vector of transient states
-                        absorbing,  # Character vector of absorbing states
-                        time_steps, # Time steps of the process
-                        probs){     # Transition probabilities as named list
-    
-    # Packages
-    require(tidyverse)
-    
-    # Get full state space
-    state_space <- c(transient,absorbing)
-    
-    # Number of states
-    n_transient <- length(transient)
-    
-    # Create data frame
-    model_frame <- expand.grid(from=state_space,
-                               to=state_space,
-                               time=time_steps,
-                               stringsAsFactors=F)
-    
-    # Drop absorbing states as starting states
-    model_frame <- model_frame %>% filter(!from%in%absorbing)
-    
-    # Transition probabilities empty
-    model_frame$P <- NA
-    
-    # Place probabilities (no generated duration dependence)
-    for(i in transient) {
-      for(j in state_space) {
-        model_frame <- model_frame %>% mutate(P=ifelse(from==i & to==j,probs[[i]][j],P))
-      }
-    }
- 
-    # Everybody dies
-    model_frame <- model_frame %>% mutate(
-      P=ifelse(time==max(time_steps) & to==absorbing[1],1,P),
-      P=ifelse(time==max(time_steps) & to!=absorbing[1],0,P) 
-    )
-    
-    # Rename values
-    model_frame <- model_frame %>% mutate(
-      from=ifelse(from%in%transient,paste(from,time,sep="_"),from),
-      to  =ifelse(to%in%transient,paste(to,time+1,sep="_"),to)
-    )
-    
-    # Return
-    return(model_frame)
-    
-  }
-  
-  # # Test:
-  # model_test <- basic_sim(time_steps = 0:10,
-  #                            transient  = c("A","B"),
-  #                            absorbing  = "X",
-  #                            probs      = list(A=c(A=0.495,B=0.495,X=0.01),
-  #                                              B=c(A=0.495,B=0.495,X=0.01)))
-  
+
   
 ### Generate transition probabilities in data frame ############################
 
@@ -345,79 +285,7 @@
     
   }
   
-  # Old test cases
-  # # Test case 1
-  # model_test <- generate_sim(time_steps = 0:10,
-  #                            transient  = c("A","B"),
-  #                            absorbing  = "X",
-  #                            probs      = list(A=c(A=0.495,B=0.495,X=0.01),
-  #                                              B=c(A=0.495,B=0.495,X=0.01)))
-  # 
-  # # Test case 2
-  # model_test <- generate_sim(time_steps = 0:10,
-  #               transient  = c("A","B"),
-  #               absorbing  = "X",
-  #               probs      = list(A=c(A=0.495,B=0.495,X=0.01),
-  #                                B=c(A=0.495,B=0.495,X=0.01)),
-  #               gen_duration = T,
-  #               diff_duration = list(A=c(A=-0.1,B=0,X=0.1)),
-  #               which_duration = "A",
-  #               interpolation_duration = list(A="random"))
-  # test <- paste(paste0("A",0:10),"0",sep="_")
-  # test2 <- paste(paste0("A",0:10),"1",sep="_")
-  # model_test %>% filter(from%in%test & to%in%test2)
-  # model_test %>% filter(from=="A10_10")   
-  # 
-  # # Test case 3
-  # model_test <- generate_sim(time_steps = 0:100,
-  #                            transient  = c("A","B"),
-  #                            absorbing  = "X",
-  #                            probs      = list(A=c(A=0.1,B=0.89,X=0.01),
-  #                                              B=c(A=0.495,B=0.495,X=0.01)),
-  #                            gen_duration = T,
-  #                            which_duration = "A",
-  #                            diff_duration = list(A=c(A=0.79,B=-0.79,X=0.1)),
-  #                            interpolation_duration = list(A="linear"))
-  # model_test %>% filter(from=="A100_0")   
-  # 
-  # # Test case 3
-  # model_test <- generate_sim(time_steps = 0:100,
-  #                            transient  = c("A","B"),
-  #                            absorbing  = "X",
-  #                            probs      = list(A=c(A=0.1,B=0.89,X=0.01),
-  #                                              B=c(A=0.495,B=0.495,X=0.01)),
-  #                            gen_duration = T,
-  #                            which_duration = "A",
-  #                            diff_duration = list(A=c(A=0.79,B=-0.79,X=0.1)),
-  #                            interpolation_duration = list(A="linear"),
-  #                            gen_age = T,
-  #                            which_age = c("A","B"),
-  #                            diff_age = list(A=c(A=0,B=0,X=0.1),
-  #                                            B=c(A=0,B=0,X=0.2)),
-  #                            interpolation_age = list(A="linear",B="linear"))
-  # 
-  # model_test %>% filter(from=="A1_0" & to=="B_1")   
-  # model_test %>% filter(from=="A100_0" & to=="B_1")   
-  # 
 
-  
-### Complete sim objects if not all entries ####################################
-  
-  complete_sim <- function(sim) {
-    
-    simnames <- names(sim)
-    allnames <- c("transient","absorbing","time_steps","probs","gen_duration",
-                  "which_duration","diff_duration","interpolation_duration",
-                  "gen_age","which_age","diff_age","interpolation_age")
-    which_missing <- allnames[!allnames%in%simnames]
-    n_missing <- length(which_missing)
-    add <- vector("list",n_missing)
-    names(add) <- which_missing
-    sim <- c(sim,add)
-    return(sim)
-    
-  }
-  
 ### Functions to be applied on simulated data ##################################
   
   # Absorbing states only once
